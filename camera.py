@@ -1,3 +1,4 @@
+#Camera index finder for ocal2 camera
 import cv2, platform
 from cv2_enumerate_cameras import enumerate_cameras
 
