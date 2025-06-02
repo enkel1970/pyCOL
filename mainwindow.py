@@ -1,6 +1,6 @@
-from PyQt6.QtWidgets import QMainWindow, QApplication, QColorDialog, QLabel
+from PyQt6.QtWidgets import QMainWindow, QApplication, QColorDialog, QLabel, QMessageBox
 from PyQt6.QtCore import QThread, pyqtSignal
-from PyQt6.QtGui import QPixmap, QColor
+from PyQt6.QtGui import QPixmap
 import cv2, os
 from videowindow import VideoWindow
 from camera import find_camera_index_by_name_substring
@@ -19,9 +19,8 @@ class CameraThread(QThread):
     def run(self):
         self.cap = cv2.VideoCapture(2, cv2.CAP_V4L2)
         
-        # Imposta MJPEG esplicitamente
+        # Set MJPEG codec and resolution
         self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc(*'MJPG'))
-        self.cap.set(cv2.CAP_PROP_SETTINGS, 1)  # Imposta MJPEG come formato di codifica
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 3264)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 2448)
 
@@ -32,7 +31,6 @@ class CameraThread(QThread):
                 self.frameCaptured.emit(frame)
         self.cap.release()
         self.cap = None
-
 
     def stop(self):
         self.running = False
@@ -45,41 +43,41 @@ class MainWindow(QMainWindow):
         self.ui = ui
         self.controls_dialog = None
 
-        # normalizza il percorso del file
+        # normalize the path of the .ui file
         asset_file_path = os.path.join(os.path.dirname(__file__), 'asset', 'logo.png')
-
-        #self.ui.setIcon(QIcon(asset_file_path))
         logo = QPixmap(asset_file_path)
         self.ui.lbl_Logo.setPixmap(logo)
       
-        # Collegamenti pulsanti
+        # Event handlers for buttons
         self.ui.btnOpenCamera.clicked.connect(self.start_camera)
         self.ui.btnCloseCamera.clicked.connect(self.stop_camera)
         self.ui.btnCameraSettings.clicked.connect(self.open_camera_control_dialog)
         self.ui.btn_exit.clicked.connect(self.close)
 
-        # Collegamento slider offset X, Y e checkbox per abilitare offset
+        # set the min and max values for offset slider
         self.ui.sliderOffsetX.setRange(-20, 20)
         self.ui.sliderOffsetY.setRange(-20, 20)
+
+        # set initial values for offset sliders
         self.ui.sliderOffsetX.setValue(0)
         self.ui.sliderOffsetY.setValue(0)
 
-        # Collega segnali controlli offset
+        # Event handlers for offset sliders and checkbox
         self.ui.sliderOffsetX.valueChanged.connect(self.update_overlay_offset)
         self.ui.sliderOffsetY.valueChanged.connect(self.update_overlay_offset)
         self.ui.checkBoxOffset.stateChanged.connect(self.toggle_overlay_offset)
 
-        # Collega segnale controlli croce
+        # Event handlers for cross sliders and checkbox
         self.ui.checkBox_4.stateChanged.connect(self.cross_visibility_changed)
         self.ui.sliderCrossLength.valueChanged.connect(self.cross_length_changed)
         self.ui.sliderThicknessCross.valueChanged.connect(self.cross_thickness_changed)
         self.ui.sliderCrossAngle.valueChanged.connect(self.cross_angle_changed)
 
-        # Oggetti di stato
+        # Objects for camera and video window
         self.camera_thread = None
         self.video_window = None
 
-        # Collegamento controlli cerchi
+        # set Events for circles sliders and checkboxes
         self.connect_overlay_controls()
 
         self.setup_color_labels()
@@ -92,22 +90,22 @@ class MainWindow(QMainWindow):
             label.mousePressEvent = lambda event, l=label: self.pick_color_for_label(l)
 
     def connect_overlay_controls(self):
-        # Cerchio 1
+        # Circle 1 and checkbox 
         self.ui.sliderRadius_1.valueChanged.connect(lambda val: self.update_circle(0, radius=val))
         self.ui.sliderThickness_1.valueChanged.connect(lambda val: self.update_circle(0, thickness=val))
         self.ui.checkBox_1.stateChanged.connect(lambda state: self.update_circle(0, visible=(state == 2)))
 
-        # Cerchio 2
+        # Circle 2 and checkbox
         self.ui.sliderRadius_2.valueChanged.connect(lambda val: self.update_circle(1, radius=val))
         self.ui.sliderThickness_2.valueChanged.connect(lambda val: self.update_circle(1, thickness=val))
         self.ui.checkBox_2.stateChanged.connect(lambda state: self.update_circle(1, visible=(state == 2)))
 
-        # Cerchio 3
+        # Circle 3 and checkbox
         self.ui.sliderRadius_3.valueChanged.connect(lambda val: self.update_circle(2, radius=val))
         self.ui.sliderThickness_3.valueChanged.connect(lambda val: self.update_circle(2, thickness=val))
         self.ui.checkBox_3.stateChanged.connect(lambda state: self.update_circle(2, visible=(state == 2)))    
     
-    # Metodi handler croce
+    # Methods for cross properties changes
     def cross_visibility_changed(self, state):
         visible = (state == 2)  # 2 = checked
         if self.video_window:
@@ -129,7 +127,7 @@ class MainWindow(QMainWindow):
         if self.video_window:
             self.video_window.set_cross_property('color', color)
 
-
+    # Methods for picking color for circles and cross color
     def pick_color_for_label(self, label: QLabel):
         current_color = label.palette().color(label.backgroundRole())
         color = QColorDialog.getColor(initial=current_color, parent=self)
@@ -137,15 +135,14 @@ class MainWindow(QMainWindow):
         if color.isValid():
             r, g, b = color.red(), color.green(), color.blue()
             label.setFixedSize(30, 30)
-            # Aggiorna lo stile come cerchio (border-radius = metà larghezza)
+            # Update the label background color
             label.setStyleSheet(f"""
                 background-color: rgb({r}, {g}, {b});    
-                border-radius: 15px;
             """)
-
+            # if the label is for cross color, update the cross color and its label
             if label.objectName() == "label_color_4":
                 self.cross_color_changed(color)
-            else:
+            else: # if the label is for circles, update the corresponding circle color
                 index = int(label.objectName().split('_')[-1]) - 1
                 self.set_circle_property(index, 'color', color)
                 self.update_circle(index, color=color)
@@ -153,7 +150,7 @@ class MainWindow(QMainWindow):
 
 
 
-    # Metodi handler cerchi
+    # Handlers for overlay offset
     def update_overlay_offset(self):
         if self.video_window and self.ui.checkBoxOffset.isChecked():
             x = self.ui.sliderOffsetX.value()
@@ -181,15 +178,27 @@ class MainWindow(QMainWindow):
             print(f"Errore lettura offset da {path}: {e}")
         return (0.0, 0.0)
          
-    # Metodi per avviare e fermare la camera    
+    """ Methods to start and stop the camera
+        Start the camera and initialize the video window
+        If the camera is already running, do nothing
+        If the camera is not found, show a warning message
+        If the camera is found, start the camera thread and show the video window
+        and set the center focus offset from the file set the properties for circles and cross """  
     def start_camera(self):
         if self.camera_thread:
             return
         # Trova l'indice della camera
         camera_index = find_camera_index_by_name_substring()
+        
         if camera_index is None:
-            print("No camera OCAL 2 found.")
+            msg = QMessageBox(self)
+            msg.setIcon(QMessageBox.Icon.Warning)
+            msg.setText("No campatible camera found.")
+            msg.setWindowTitle("Camera Error")
+            msg.setStandardButtons(QMessageBox.StandardButton.Ok)
+            msg.exec()
             return
+        
         else:
             print(f"Start camera with index {camera_index}")
             # Initialize the camera thread and video window
@@ -199,7 +208,7 @@ class MainWindow(QMainWindow):
             self.video_window = VideoWindow()
 
             center_offset = self.read_focus_offset()
-            print(f"Offset letto da file: {center_offset}")
+            print(f"Read offset parameter from: {center_offset}")
             self.video_window.set_center_focus(center_offset[0], center_offset[1])
 
             # set properties for circles and cross
@@ -219,7 +228,7 @@ class MainWindow(QMainWindow):
             self.video_window.set_cross_property('color', getattr(self.ui, 'label_color_4').palette().color(getattr(self.ui, 'label_color_4').backgroundRole()))
             self.video_window.show()
 
-    # Ferma la camera e chiude la finestra video
+    # Stop the camera thread and close the video window
     def stop_camera(self):
         if self.camera_thread:
             self.camera_thread.stop()
@@ -228,10 +237,12 @@ class MainWindow(QMainWindow):
             self.video_window.close()
             self.video_window = None
 
+    # Update the video frame in the video window
     def update_frame(self, frame):
         if self.video_window:
             self.video_window.set_frame(frame)
 
+    # Update the cross properties in the video window
     def update_cross(self, length=None, thickness=None, angle=None, visible=None):
         if self.video_window:
             self.video_window.set_cross_property('length', length)
@@ -274,22 +285,7 @@ class MainWindow(QMainWindow):
         if not self.controls_dialog:
             self.controls_dialog = CameraControlsDialog(camera_thread=self.camera_thread, parent=self)
         self.controls_dialog.show()
-
-    def find_camera_property_range(self, cap, prop_id, test_min=0.0, test_max=1.0, steps=20):
-        last_valid = test_min
-        step_size = (test_max - test_min) / steps
-
-        for i in range(steps + 1):
-            val = test_min + i * step_size
-            cap.set(prop_id, val)
-            actual_val = cap.get(prop_id)
-            if abs(actual_val - val) / max(val, 0.0001) < 0.05:
-                last_valid = val
-            else:
-                break
-        return (test_min, last_valid)
     
-
     def closeEvent(self, event):
         if self.camera_thread:
             self.camera_thread.stop()

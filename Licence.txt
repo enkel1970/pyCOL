@@ -1,4 +1,3 @@
-""""
 This software is free software: you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or (at your option)
@@ -28,43 +27,7 @@ operational context.
 
 ────────────────────────────────────────────────────────────────────────
 
-Software name: pycol
-Author: Carlo Moisè 
+Software name: pyCOL
+Author: Carlo Moisè
 Version: 0.0.1
 Date: 2025-06-02
-"""
-
-import sys, os
-from PyQt6.QtWidgets import QApplication
-from PyQt6 import uic
-from mainwindow import MainWindow
-from PyQt6.QtGui import QIcon
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-
-    # Normalize the path to the UI and asset files 
-    ui_file_path = os.path.join(os.path.dirname(__file__), 'ui', 'mainwindow.ui')
-    asset_file_path = os.path.join(os.path.dirname(__file__), 'asset', 'icon.png')
-        
-    # Load the UI file
-    ui = uic.loadUi(ui_file_path)
-
-    print(asset_file_path)
-    
-    icon = QIcon (asset_file_path)
-    size = QApplication.primaryScreen().size()
-    
-    window = MainWindow(ui)
-
-    # Set the main window to the UI position and size
-    # NOTE: The position is not allowed in wayland protocol!
-    ui.window().setGeometry(size.width() - 363, 0, 363, 919)
-    ui.show()
-    
-
-    ui.window().setWindowTitle("Python Newtonian Telescope Collimator")
-    ui.window().setWindowIcon(icon)
-    
-    sys.exit(app.exec())
-

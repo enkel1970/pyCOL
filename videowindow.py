@@ -9,19 +9,31 @@ import numpy as np
 class VideoWindow(QWidget):
     def __init__(self):
         super().__init__()
-        # imposta il colore di sfondo della finestra
+
+        # set background color to black
         self.setStyleSheet("background-color: black;")
 
+        # Set the window size and position
+        # NOTE: The position is not allowed in wayland protocol!
+        self.setGeometry(0, 0, 1280, 960)
 
-        # Initialize the video frame
+        # set minimum size
+        self.setMinimumSize(1280, 960)
+
+        # set window title and icon
+        icon_path = os.path.join(os.path.dirname(__file__), 'asset', 'icon.png')
+        self.setWindowIcon(QIcon(icon_path))
+
+
+        # Initialize the video frame.
         self.frame = None
         self.zoom_factor = 0.39 # zoom base
 
         # Overlay properties for 3 circles (default)
         self.circles = [
-            {'radius': 500, 'thickness': 2, 'visible': False, 'color': QColor(255, 0, 0)},   # Raggio 1 rosso
-            {'radius': 250, 'thickness': 2, 'visible': False, 'color': QColor(0, 255, 0)},   # Raggio 2 verde
-            {'radius': 100, 'thickness': 2, 'visible': False, 'color': QColor(0, 0, 255)},   # Raggio 3 blu
+            {'radius': 500, 'thickness': 2, 'visible': False, 'color': QColor(255, 0, 0)},   # Circle 1 red 
+            {'radius': 250, 'thickness': 2, 'visible': False, 'color': QColor(0, 255, 0)},   # Circle 2 green
+            {'radius': 100, 'thickness': 2, 'visible': False, 'color': QColor(0, 0, 255)},   # Circle 3 blue
         ]
 
         # Proprietà croce overlay (default)
@@ -40,22 +52,18 @@ class VideoWindow(QWidget):
         self.center_offset = (0, 0)
         self.offset_enabled = False
 
-        # Dimensione finestra
-        self.setMinimumSize(1280, 960)
 
-        self.setWindowTitle("Collimator Window")
-
-        # Imposta l'icona della finestra
-        icon_path = os.path.join(os.path.dirname(__file__), 'asset', 'icon.png')
-        self.setWindowIcon(QIcon(icon_path))
-        
     def set_frame(self, frame):
-        """Aggiorna il frame da visualizzare e ridisegna la finestra."""
+        # Update the video frame
         self.frame = frame
         self.update()
 
     def paintEvent(self, event):
         painter = QPainter(self)
+
+        # Set anti-aliasing and smooth pixmap transform for better quality
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
 
         if self.frame is not None:
             rgb_image = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)

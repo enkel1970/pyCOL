@@ -99,7 +99,7 @@ class CameraControlsDialog(QDialog):
 
     def handle_auto_focus(self, state):
         self.set_property(cv2.CAP_PROP_AUTOFOCUS, state)
-        self.slider_Focus.setEnabled(state == 0)  # Abilita solo se non è automatico
+        self.slider_Focus.setEnabled(state == 0)  # Enable focus slider only if autofocus is off
 
     def handle_auto_exposure(self, state):
         self.set_property(cv2.CAP_PROP_AUTO_EXPOSURE, state)
