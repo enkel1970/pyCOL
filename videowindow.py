@@ -1,7 +1,7 @@
 import math, os
 from PyQt6.QtWidgets import QWidget
 from PyQt6.QtGui import QImage, QPixmap, QPainter, QColor, QPen, QIcon
-from PyQt6.QtCore import Qt, QPoint
+from PyQt6.QtCore import Qt, QPointF, QLineF
 
 import cv2
 import numpy as np
@@ -14,10 +14,12 @@ class VideoWindow(QWidget):
         self.setStyleSheet("background-color: black;")
 
         # Set the window size and position
-        # NOTE: The position is not allowed in wayland protocol!
+        # NOTE: The position is not allowed in wayland protocol. 
+        # Using wayland this window will be centered and can cover the main window. Use X11 session as workaround. 
         self.setGeometry(0, 0, 1280, 960)
 
-        # set minimum size
+        # set minimum size of widget
+        # This is useful to avoid resizing too small
         self.setMinimumSize(1280, 960)
 
         # set window title and icon
@@ -36,7 +38,7 @@ class VideoWindow(QWidget):
             {'radius': 100, 'thickness': 2, 'visible': False, 'color': QColor(0, 0, 255)},   # Circle 3 blue
         ]
 
-        # Proprietà croce overlay (default)
+        # Cross property overlay (default)
         self.cross = {
             'visible': False,
             'length': 100,        # axis length in pixels
@@ -46,9 +48,9 @@ class VideoWindow(QWidget):
         }
 
         # Centro di taratura dal file Ocal (x,y) in pixel, inizialmente angolo in alto a sinistra
-        self.center_focus = (0,0)
+        self.center_focus = (0.0,0.0)
         
-        # Offset di spostamento overlay (x,y)
+        # Overlay offset (x,y)
         self.center_offset = (0, 0)
         self.offset_enabled = False
 
@@ -80,8 +82,8 @@ class VideoWindow(QWidget):
             painter.drawPixmap(pixmap_x, pixmap_y, pixmap)
 
             # Calcolo corretto del centro in base a center_focus
-            center_x = pixmap_x + int(self.center_focus[0] * self.zoom_factor)
-            center_y = pixmap_y + int(self.center_focus[1] * self.zoom_factor)
+            center_x = pixmap_x + self.center_focus[0] * self.zoom_factor
+            center_y = pixmap_y + self.center_focus[1] * self.zoom_factor
 
             # Disegna lo zoom factor in alto a sinistra
             zoom_text = f"Zoom: {self.zoom_factor:.2f}x"
@@ -102,8 +104,8 @@ class VideoWindow(QWidget):
             painter.drawText(text_rect, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, zoom_text)
 
             if self.offset_enabled:
-                center_x += int(self.center_offset[0] * self.zoom_factor)
-                center_y += int(self.center_offset[1] * self.zoom_factor)
+                center_x += self.center_offset[0] * self.zoom_factor
+                center_y += self.center_offset[1] * self.zoom_factor
 
             # Disegna cerchi
             for circle in self.circles:
@@ -114,7 +116,7 @@ class VideoWindow(QWidget):
                     painter.setBrush(Qt.BrushStyle.NoBrush)
 
                     scaled_radius = circle['radius'] * self.zoom_factor  # Zoom sul raggio
-                    painter.drawEllipse(QPoint(center_x, center_y), int(scaled_radius), int(scaled_radius))
+                    painter.drawEllipse(QPointF(center_x, center_y), scaled_radius, scaled_radius)
 
             # Disegna croce solo se visibile
             if self.cross['visible']:
@@ -136,12 +138,19 @@ class VideoWindow(QWidget):
                 x4 = length * math.cos(angle_rad + math.pi / 2)
                 y4 = length * math.sin(angle_rad + math.pi / 2)
 
-                painter.drawLine(int(center_x + x1), int(center_y + y1), int(center_x + x2), int(center_y + y2))
-                painter.drawLine(int(center_x + x3), int(center_y + y3), int(center_x + x4), int(center_y + y4))
+                v_line = QLineF(center_x + x1, center_y + y1, center_x + x2, center_y + y2)
+                h_line = QLineF(center_x + x3, center_y + y3, center_x + x4, center_y + y4)
+
+                painter.drawLine(v_line)
+                painter.drawLine(h_line)
         else:
             painter.fillRect(self.rect(), QColor(0, 0, 0))
 
-    
+    # Zoom can be done with the mouse wheel
+    # This method is called when the mouse wheel is scrolled
+    # The zoom factor is adjusted based on the scroll direction and amount
+    # The zoom factor is a multiplicative factor that scales the image size
+    # The zoom factor is clamped to a range to prevent excessive zooming in or out
     def wheelEvent(self, event):
         delta = event.angleDelta().y()
 
@@ -203,6 +212,6 @@ class VideoWindow(QWidget):
             self.update()
 
     def set_center_focus(self, x, y):
-        """Imposta il centro di messa a fuoco."""
+        """Set center of focus."""
         self.center_focus = (x, y)
         self.update()

@@ -1,4 +1,10 @@
 """"
+Software name: pyCOL
+Author: Carlo Moisè 
+email: carlo.moise@libero.it
+Version: 0.0.1
+Date: 2025-06-02
+
 This software is free software: you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or (at your option)
@@ -28,10 +34,6 @@ operational context.
 
 ────────────────────────────────────────────────────────────────────────
 
-Software name: pycol
-Author: Carlo Moisè 
-Version: 0.0.1
-Date: 2025-06-02
 """
 
 import sys, os

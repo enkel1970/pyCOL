@@ -1,6 +1,6 @@
 import cv2
 
-def demonstrate_properties(cap):
+def get_properties(cap):
     """
     Test and display OpenCV properties of the video capture device.
     """
@@ -95,7 +95,7 @@ if __name__ == "__main__":
     print(f"Using backend: {cap.getBackendName()}")
 
     # Demonstrate properties
-    demonstrate_properties(cap)
+    get_properties(cap)
 
     # Real-time demonstration
     real_time_demo(cap)

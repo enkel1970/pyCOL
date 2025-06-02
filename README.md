@@ -1,10 +1,19 @@
 <h1>Python newtonian telescope collimator application</h1>
 
-<p>This application was created out of the need to use the OCAL 2 PRO telescope collimator on the Linux operating system.</p>
+This software is licensed under the GNU General Public License v3.  
+See the [LICENSE](./Licence.txt) file for full details.
 
+<p>This application was created out of the need to use the OCAL 2 PRO telescope collimator on Linux operating system.</p>
+
+<h2>Requirements</h2>
+
+<ul>
+<li>Python version => Python 3.12.7 installed on your OS</li>
+</ul>
+
+<p>Download the latest release from <a href="https://github.com/enkel1970/pyCOL/releases/latest">GitHub Releases</a> and extract it.</p>
 
 <h2>Linux installation</h2>
-
 
 <p>Create a virtual environment</p>
 <pre><code>python3 -m venv pycol</code></pre>
@@ -20,7 +29,7 @@
 
 
 <h2>Windows installation</h2>
-<p>Download the latest release from <a href="https://github.com/yourusername/pycol/releases/latest">GitHub Releases</a> and extract it.</p>
+
 <p>Create a virtual environment</p>
 <pre><code>python -m venv pycol</code></pre>
 <p>Activate the virtual environment</p>
@@ -29,6 +38,8 @@
 <pre><code>pip install -r requirements.txt</code></pre>
 <p>Run the application</p>
 <pre><code>python main.py</code></pre>
+
+<p> <strong>Before starting the application change your [focus.txt](./focus.txt) provided by the manufacturer.</strong></p>
 
 
 
@@ -52,6 +63,12 @@
     <li>CAP_PROP_ZOOM: Not supported by this device.</li>
     <li>CAP_PROP_FOCUS: TEST OK</li>
 </ul>
+
+
+## Author
+
+Created by Carlo Moisè (<carlo.moise@libero.it>) 
+
 
 
 
