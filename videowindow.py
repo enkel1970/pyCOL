@@ -25,6 +25,7 @@ class VideoWindow(QWidget):
         # set window title and icon
         icon_path = os.path.join(os.path.dirname(__file__), 'asset', 'icon.png')
         self.setWindowIcon(QIcon(icon_path))
+        self.setWindowTitle("Collimator Video Overlay")
 
 
         # Initialize the video frame.
@@ -154,10 +155,11 @@ class VideoWindow(QWidget):
     def wheelEvent(self, event):
         delta = event.angleDelta().y()
 
-        # Fattore di zoom più fine (es. 1.02 è più graduale di 1.1)
+        # Fine zoom factor (es. 1.02 is more fine than 1.1)
         zoom_step = 1.02
 
-        # Conta di quante "tacche" si è mossa la rotella (ogni 120 è una tacca)
+        # count the tick of mouse wheel (120 tick = 1 step)
+        # If the wheel is scrolled up, delta is positive, if down, delta is negative
         num_steps = delta / 120
 
         if num_steps > 0:
@@ -169,37 +171,42 @@ class VideoWindow(QWidget):
 
         self.update()
     
-    # Nuovi setter per la croce
+    # method to seet cross properties
     def set_cross_property(self, prop, value):
-
         if prop in self.cross:
             self.cross[prop] = value
-            print(f"set_cross_property chiamato con {prop}={value}")
             self.update()
 
 
-    # Metodi pubblici richiesti
-
+    # Public methods to set properties of the overlay
+    
+    #Set the overlay center offset (x, y) in pixels.
     def set_center_offset(self, x, y):
-        """Imposta l’offset di spostamento overlay."""
         self.center_offset = (x, y)
-        print(f"set_center_offset chiamato con x={x}, y={y}")
         self.update()
 
+    # Set the visibility of the cross overlay.
     def set_offset_enabled(self, enabled: bool):
-        """Abilita o disabilita l’applicazione dell’offset."""
+        #Enable or disable the offset feature.
         self.offset_enabled = enabled
         self.update()
 
+    
+    # Set a property of a specific circle by index.
+    # index: index of the circle (0, 1, 2)
+    # prop: property name (e.g., 'radius', 'color', 'thickness', 'visible')
+    # value: new value for the property    
     def set_circle_property(self, index, prop, value):
-        """Imposta una proprietà di un cerchio (radius, thickness, visible, color)."""
+
         if 0 <= index < len(self.circles):
+           
             if prop in self.circles[index]:
                 self.circles[index][prop] = value
                 self.update()
 
+    # Update circle properties by index
     def update_circle(self, index, radius=None, color=None, thickness=None, visible=None):
-        """Aggiorna le proprietà di un cerchio specifico (chiamata da MainWindow)."""
+
         if 0 <= index < len(self.circles):
             if radius is not None:
                 self.circles[index]['radius'] = radius
@@ -211,7 +218,7 @@ class VideoWindow(QWidget):
                 self.circles[index]['visible'] = visible
             self.update()
 
+    # Set the center of focus for the overlay.
     def set_center_focus(self, x, y):
-        """Set center of focus."""
         self.center_focus = (x, y)
         self.update()
