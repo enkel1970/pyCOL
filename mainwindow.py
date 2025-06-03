@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QMainWindow, QApplication, QColorDialog, QLabel, QMessageBox
 from PyQt6.QtCore import QThread, pyqtSignal
 from PyQt6.QtGui import QPixmap
-import cv2, os
+import cv2, os, platform
 from videowindow import VideoWindow
 from camera import find_camera_index_by_name_substring
 from cameracontrol import CameraControlsDialog
@@ -17,7 +17,18 @@ class CameraThread(QThread):
         self.cap = None
                 
     def run(self):
-        self.cap = cv2.VideoCapture(2, cv2.CAP_V4L2)
+        # select the appropriate backend based on the platform
+        platform_name = platform.system().lower()
+        if platform_name == 'windows':
+            self.cap = cv2.VideoCapture(self.camera_index, cv2.CAP_DSHOW)
+            self.cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)  # Set manual exposure
+            self.cap.set(cv2.CAP_PROP_EXPOSURE, -4)  # Set exposure to a reasonable value
+        elif platform_name == 'darwin':
+            self.cap = cv2.VideoCapture(self.camera_index, cv2.CAP_AVFOUNDATION)
+        elif platform_name == 'linux':
+            self.cap = cv2.VideoCapture(self.camera_index, cv2.CAP_V4L2)
+        else:
+            raise RuntimeError(f"Unsupported platform: {platform_name}")
         
         # Set MJPEG codec and resolution
         self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc(*'MJPG'))
@@ -82,6 +93,21 @@ class MainWindow(QMainWindow):
 
         self.setup_color_labels()
 
+        self.ui.setStyleSheet(f"""
+            QSlider::handle:horizontal {{
+                background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #b4b4b4, stop:1 #8f8f8f);
+                border: 1px solid #5c5c5c;
+                width: 18px;
+                margin: -2px 0;
+                border-radius: 3px;
+            }}
+            QSlider::groove:horizontal {{
+                background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(128, 128, 128, 255), stop:1 rgba(255, 0, 0, 255));
+                height: 8px;
+                border-radius: 3px;
+            }}
+        """)
+
 
     def setup_color_labels(self):
         for i in range(1, 5):  
@@ -137,7 +163,9 @@ class MainWindow(QMainWindow):
             label.setFixedSize(30, 30)
             # Update the label background color
             label.setStyleSheet(f"""
-                background-color: rgb({r}, {g}, {b});    
+                background-color: rgb({r}, {g}, {b});
+                border: 3px solid black;
+                border-radius: 15px;  /* Make it circular */   
             """)
             # if the label is for cross color, update the cross color and its label
             if label.objectName() == "label_color_4":
@@ -253,6 +281,7 @@ class MainWindow(QMainWindow):
     def update_circle(self, index, radius=None, color=None, thickness=None, visible=None):
         if self.video_window:
             self.video_window.update_circle(index, radius, color, thickness, visible)
+            print(f"Updated circle {index} with radius={radius}, color={color}, thickness={thickness}, visible={visible}")
 
     def set_zoom(self, zoom_value):
         if self.video_window:
