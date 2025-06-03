@@ -39,7 +39,7 @@ See the [LICENSE](./Licence.txt) file for full details.
 <p>Run the application</p>
 <pre><code>python main.py</code></pre>
 
-<p> <strong>Before starting the application change your [focus.txt](./focus.txt) provided by the manufacturer.</strong></p>
+<p> <strong>Before starting the application change your focus.txt parameters provided by the manufacturer.</strong></p>
 
 
 
