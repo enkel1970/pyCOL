@@ -1,5 +1,5 @@
-""""
-Software name: pyCOL
+# -*- coding: utf-8 -*-
+'''
 Author: Carlo Moisè 
 email: carlo.moise@libero.it
 Version: 0.0.1
@@ -33,8 +33,7 @@ verify the compatibility, safety, and reliability of the software in any
 operational context.
 
 ────────────────────────────────────────────────────────────────────────
-
-"""
+'''
 
 import sys, os
 from PyQt6.QtWidgets import QApplication
@@ -51,8 +50,6 @@ if __name__ == "__main__":
         
     # Load the UI file
     ui = uic.loadUi(ui_file_path)
-
-    print(asset_file_path)
     
     icon = QIcon (asset_file_path)
     size = QApplication.primaryScreen().size()
@@ -61,10 +58,8 @@ if __name__ == "__main__":
 
     # Set the main window to the UI position and size
     # NOTE: The position is not allowed in wayland protocol!
-    ui.window().setGeometry(size.width() - 363, 0, 363, 919)
+    ui.window().setGeometry(size.width() - 363, 0, 363, 720)
     ui.show()
-    
-
     ui.window().setWindowTitle("Python Newtonian Telescope Collimator")
     ui.window().setWindowIcon(icon)
     
