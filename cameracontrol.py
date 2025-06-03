@@ -2,86 +2,110 @@ from PyQt6 import uic
 from PyQt6.QtWidgets import QDialog
 from PyQt6.QtGui import QIcon
 import cv2
+import platform
 
 class CameraControlsDialog(QDialog):
     def __init__(self, camera_thread, parent=None):
         super().__init__(parent)
         uic.loadUi("ui/cameracontrols.ui", self)
-        self.setWindowTitle("Camera settngs")
+        self.setWindowTitle("Camera settings")
         self.setWindowIcon(QIcon("asset/icon.png"))
 
         self.camera_thread = camera_thread
+        self.is_windows = platform.system() == "Windows"
 
         self.pushButton_close.clicked.connect(self.close_dialog)
 
-        # Brightness slider
+        # Brightness
         self.slider_Brightness.setRange(-64, 64)
-        self.slider_Brightness.setValue(int(self.get_property(cv2.CAP_PROP_BRIGHTNESS)))
-        self.slider_Brightness.valueChanged.connect(lambda value: self.set_property(cv2.CAP_PROP_BRIGHTNESS, value))
+        self.slider_Brightness.setValue(self.safe_get(cv2.CAP_PROP_BRIGHTNESS))
+        self.lbl_brightness.setText(str(self.slider_Brightness.value()))
 
-        # Contrast slider
+        self.slider_Brightness.valueChanged.connect(lambda v: (self.set_property(cv2.CAP_PROP_BRIGHTNESS, v),
+               self.lbl_brightness.setText(str(v))))
+
+        # Contrast
         self.slider_Contrast.setRange(0, 100)
-        self.slider_Contrast.setValue(int(self.get_property(cv2.CAP_PROP_CONTRAST)))
-        self.slider_Contrast.valueChanged.connect(lambda value: self.set_property(cv2.CAP_PROP_CONTRAST, value))
+        self.slider_Contrast.setValue(self.safe_get(cv2.CAP_PROP_CONTRAST))
+        self.lbl_contrast.setText(str(self.slider_Contrast.value()))
+        self.slider_Contrast.valueChanged.connect(lambda v: (self.set_property(cv2.CAP_PROP_CONTRAST, v),
+               self.lbl_contrast.setText(str(v))))
 
-        # Focus slider
+        # Focus
         self.slider_Focus.setRange(0, 1023)
-        self.slider_Focus.setValue(int(self.get_property(cv2.CAP_PROP_FOCUS)))
-        self.slider_Focus.valueChanged.connect(lambda value: self.set_property(cv2.CAP_PROP_FOCUS, value))
+        self.slider_Focus.setValue(self.safe_get(cv2.CAP_PROP_FOCUS))
+        self.lbl_focus.setText(str(self.slider_Focus.value()))
+        self.slider_Focus.valueChanged.connect(lambda v: (self.set_property(cv2.CAP_PROP_FOCUS, v),
+                self.lbl_focus.setText(str(v))))
 
-        # Saturation slider
+        # Saturation
         self.slider_Saturation.setRange(0, 100)
-        self.slider_Saturation.setValue(int(self.get_property(cv2.CAP_PROP_SATURATION)))
-        self.slider_Saturation.valueChanged.connect(lambda value: self.set_property(cv2.CAP_PROP_SATURATION, value))
+        self.slider_Saturation.setValue(self.safe_get(cv2.CAP_PROP_SATURATION))
+        self.lbl_saturation.setText(str(self.slider_Saturation.value()))
+        self.slider_Saturation.valueChanged.connect(lambda v: (self.set_property(cv2.CAP_PROP_SATURATION, v),
+                self.lbl_saturation.setText(str(v))))
 
-        # Exposure slider
-        self.slider_Exposure.setRange(50, 10000)
-        self.slider_Exposure.setValue(int(self.get_property(cv2.CAP_PROP_EXPOSURE)))
-        self.slider_Exposure.valueChanged.connect(lambda value: self.set_property(cv2.CAP_PROP_EXPOSURE, value))
+        # Hue
+        self.slider_HUE.setRange(-180, 180)
+        self.slider_HUE.setValue(self.safe_get(cv2.CAP_PROP_HUE))
+        self.lbl_hue.setText(str(self.slider_HUE.value()))
+        self.slider_HUE.valueChanged.connect(lambda v: (self.set_property(cv2.CAP_PROP_HUE, v),
+                self.lbl_hue.setText(str(v))))
 
-        # Gamma slider
-        self.slider_Gamma.setRange(0, 500)
-        self.slider_Gamma.setValue(int(self.get_property(cv2.CAP_PROP_GAMMA)))
-        self.slider_Gamma.valueChanged.connect(lambda value: self.set_property(cv2.CAP_PROP_GAMMA, value))
+        # Exposure
+        if self.is_windows:
+            self.slider_Exposure.setRange(-80, 0)  # Typical Windows -13 to 0 (log scale) OCAL camera ma -8.0
+            init_val = (int(self.safe_get(cv2.CAP_PROP_EXPOSURE) * 10))
+            self.slider_Exposure.valueChanged.connect(self.update_exposure)
+            self.slider_Exposure.setValue(init_val)
+            self.lbl_exposure.setText(f"{init_val / 10.0:.1f}")
+            self.slider_Exposure.valueChanged.connect(self.update_exposure)
+        else:
+            self.slider_Exposure.setRange(1, 10000)  # Linux (e.g. microseconds)
+            self.slider_Exposure.setValue(self.safe_get(cv2.CAP_PROP_EXPOSURE))
+            self.lbl_exposure.setText(f"{self.slider_Exposure.value() / 10.0:.1f}")
+            self.slider_Exposure.valueChanged.connect(lambda v: (self.set_property(cv2.CAP_PROP_EXPOSURE, v),
+                    self.lbl_exposure.setText(f"{v:.1f}")))
 
-        # Temperature slider
+        # Gamma
+        self.slider_Gamma.setRange(100, 500)
+        self.slider_Gamma.setValue(self.safe_get(cv2.CAP_PROP_GAMMA))
+        self.lbl_gamma.setText(str(self.slider_Gamma.value()))      
+        self.slider_Gamma.valueChanged.connect(lambda v: (self.set_property(cv2.CAP_PROP_GAMMA, v), 
+                    self.lbl_gamma.setText(str(v))))
+
+        # Color temperature
         self.slider_Colortemp.setRange(2800, 6500)
-        self.slider_Colortemp.setValue(int(self.get_property(cv2.CAP_PROP_TEMPERATURE)))
-        self.slider_Colortemp.valueChanged.connect(lambda value: self.set_property(cv2.CAP_PROP_TEMPERATURE, value))
+        self.slider_Colortemp.setValue(self.safe_get(cv2.CAP_PROP_TEMPERATURE))
+        self.lbl_color_temp.setText(str(self.slider_Colortemp.value()))
+        self.slider_Colortemp.valueChanged.connect(lambda v: (self.set_property(cv2.CAP_PROP_TEMPERATURE, v),
+                    self.lbl_color_temp.setText(str(v))))
 
-        # White Balance slider currently unsupported in OpenCV
-        # self.slider_Wbalance.setEnabled(False)
-        # self.slider_Wbalance.setRange(-5, 5)
-        # self.slider_Wbalance.setValue(int(self.get_property(cv2.CAP_PROP_WB_TEMPERATURE)))
-        # self.slider_Wbalance.valueChanged.connect(lambda value: self.set_property(cv2.CAP_PROP_WB_TEMPERATURE, value))
+        # Sharpness
+        self.slider_sharpness.setRange(0, 100)
+        self.slider_sharpness.setValue(self.safe_get(cv2.CAP_PROP_SHARPNESS))
+        self.lbl_sharpness.setText(str(self.slider_sharpness.value()))
+        self.slider_sharpness.valueChanged.connect(lambda v: (self.set_property(cv2.CAP_PROP_SHARPNESS, v), 
+                    self.lbl_sharpness.setText(str(v))))
 
-        # checkBox_AutoFocus
-        focus_auto = bool(self.get_property(cv2.CAP_PROP_AUTOFOCUS))
-        self.checkBox_Auto_Focus.setChecked(focus_auto)
-        self.handle_auto_focus(int(focus_auto))  # aggiorna lo slider
+        # Auto Focus
+        autofocus = bool(self.get_property(cv2.CAP_PROP_AUTOFOCUS))
+        self.checkBox_Auto_Focus.setChecked(autofocus)
+        self.handle_auto_focus(int(autofocus))
         self.checkBox_Auto_Focus.stateChanged.connect(self.handle_auto_focus)
 
-        # checkBox_AutoExposure
-        exposure_auto = bool(self.get_property(cv2.CAP_PROP_AUTO_EXPOSURE))
-        self.checkBox_Auto_Exposure.setChecked(exposure_auto)
-        self.handle_auto_exposure(int(exposure_auto))   
+        # Auto Exposure
+        ae_value = self.get_property(cv2.CAP_PROP_AUTO_EXPOSURE)
+        is_auto_expo = ae_value >= 0.5
+        self.checkBox_Auto_Exposure.setChecked(is_auto_expo)
+        self.handle_auto_exposure(is_auto_expo)
         self.checkBox_Auto_Exposure.stateChanged.connect(self.handle_auto_exposure)
 
-        # checkBox_AutoWhiteBalance
+        # Auto White Balance
         wb_auto = bool(self.get_property(cv2.CAP_PROP_AUTO_WB))
-        # self.checkBox_Auto_Wbalance.setChecked(wb_auto)
-        self.handle_auto_whitebalance(int(wb_auto))  # aggiorna lo slider
+        self.checkBox_Auto_Wbalance.setChecked(wb_auto)
+        self.handle_auto_whitebalance(int(wb_auto))
         self.checkBox_Auto_Wbalance.stateChanged.connect(self.handle_auto_whitebalance)
-
-        # Sharpness slider
-        self.slider_sharpness.setRange(0, 100)
-        self.slider_sharpness.setValue(int(self.get_property(cv2.CAP_PROP_SHARPNESS)))
-        self.slider_sharpness.valueChanged.connect(lambda value: self.set_property(cv2.CAP_PROP_SHARPNESS, value))
-
-        # Hue slider
-        self.slider_HUE.setRange(0, 180)
-        self.slider_HUE.setValue(int(self.get_property(cv2.CAP_PROP_HUE)))
-        self.slider_HUE.valueChanged.connect(lambda value: self.set_property(cv2.CAP_PROP_HUE, value))
 
     def close_dialog(self):
         self.close()
@@ -89,22 +113,38 @@ class CameraControlsDialog(QDialog):
     def set_property(self, prop, val):
         if self.camera_thread and self.camera_thread.cap:
             self.camera_thread.cap.set(prop, float(val))
-            val = self.get_property(prop)
-            print(f"Updated {prop} at {val}")
-    
+            new_val = self.get_property(prop)
+            print(f"Updated {prop} to {new_val}")
+
     def get_property(self, prop):
         if self.camera_thread and self.camera_thread.cap:
             return self.camera_thread.cap.get(prop)
         return 0
 
+    def safe_get(self, prop):
+        """Get numeric property value. Accept negative for exposure (Windows)."""
+        try:
+            val = self.get_property(prop)
+            if prop == cv2.CAP_PROP_EXPOSURE:
+                return int(val)  # Accept negative on Windows
+            return int(val) if val >= 0 else 0
+        except:
+            return 0
+
     def handle_auto_focus(self, state):
         self.set_property(cv2.CAP_PROP_AUTOFOCUS, state)
-        self.slider_Focus.setEnabled(state == 0)  # Enable focus slider only if autofocus is off
+        self.slider_Focus.setEnabled(state == 0)
 
     def handle_auto_exposure(self, state):
-        self.set_property(cv2.CAP_PROP_AUTO_EXPOSURE, state)
+        # 0.25 = manual, 0.75 = auto (Windows-style)
+        val = 0.75 if state else 0.25
+        self.set_property(cv2.CAP_PROP_AUTO_EXPOSURE, val)
         self.slider_Exposure.setEnabled(state == 0)
 
     def handle_auto_whitebalance(self, state):
         self.set_property(cv2.CAP_PROP_AUTO_WB, state)
-        # self.slider_Wbalance.setEnabled(state == 0)
+
+    def update_exposure(self, val):
+        real_val = val / 10.0
+        self.set_property(cv2.CAP_PROP_EXPOSURE, real_val)
+        print(f"EXPOSURE {real_val}")
