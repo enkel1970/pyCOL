@@ -27,30 +27,17 @@
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="1">
-     <widget class="QSlider" name="slider_Contrast">
-      <property name="maximum">
-       <number>100</number>
+    <item row="8" column="2">
+     <widget class="QLabel" name="lbl_hue">
+      <property name="text">
+       <string>TextLabel</string>
       </property>
-      <property name="sliderPosition">
-       <number>50</number>
-      </property>
+     </widget>
+    </item>
+    <item row="7" column="1">
+     <widget class="QSlider" name="slider_sharpness">
       <property name="orientation">
        <enum>Qt::Orientation::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QLabel" name="label_2">
-      <property name="text">
-       <string>Contrast</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="3">
-     <widget class="QCheckBox" name="checkBox_Auto_Exposure">
-      <property name="text">
-       <string>Auto</string>
       </property>
      </widget>
     </item>
@@ -61,31 +48,17 @@
       </property>
      </widget>
     </item>
-    <item row="5" column="0">
-     <widget class="QLabel" name="label_6">
+    <item row="3" column="2">
+     <widget class="QLabel" name="lbl_saturation">
       <property name="text">
-       <string>Gamma</string>
+       <string>TextLabel</string>
       </property>
      </widget>
     </item>
     <item row="8" column="0">
-     <widget class="QLabel" name="label_9">
+     <widget class="QLabel" name="label_10">
       <property name="text">
-       <string>Sharpness</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="0">
-     <widget class="QLabel" name="label">
-      <property name="text">
-       <string>Brightness</string>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="0">
-     <widget class="QLabel" name="label_8">
-      <property name="text">
-       <string>W. balance</string>
+       <string>HUE</string>
       </property>
      </widget>
     </item>
@@ -105,20 +78,6 @@
       </property>
      </widget>
     </item>
-    <item row="8" column="1">
-     <widget class="QSlider" name="slider_sharpness">
-      <property name="orientation">
-       <enum>Qt::Orientation::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="9" column="1">
-     <widget class="QSlider" name="slider_HUE">
-      <property name="orientation">
-       <enum>Qt::Orientation::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
     <item row="5" column="1">
      <widget class="QSlider" name="slider_Gamma">
       <property name="maximum">
@@ -129,6 +88,61 @@
       </property>
       <property name="orientation">
        <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QSlider" name="slider_Saturation">
+      <property name="maximum">
+       <number>100</number>
+      </property>
+      <property name="value">
+       <number>50</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>Focus</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QLabel" name="lbl_brightness">
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="2">
+     <widget class="QLabel" name="lbl_gamma">
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="2">
+     <widget class="QLabel" name="lbl_exposure">
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="0">
+     <widget class="QLabel" name="label_9">
+      <property name="text">
+       <string>Sharpness</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>Contrast</string>
       </property>
      </widget>
     </item>
@@ -148,17 +162,31 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="0">
-     <widget class="QLabel" name="label_4">
+    <item row="0" column="0">
+     <widget class="QLabel" name="label">
       <property name="text">
-       <string>Saturation</string>
+       <string>Brightness</string>
       </property>
      </widget>
     </item>
-    <item row="9" column="0">
-     <widget class="QLabel" name="label_10">
+    <item row="6" column="3">
+     <widget class="QCheckBox" name="checkBox_Auto_Wbalance">
       <property name="text">
-       <string>HUE</string>
+       <string>Auto</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="2">
+     <widget class="QLabel" name="lbl_color_temp">
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="2">
+     <widget class="QLabel" name="lbl_sharpness">
+      <property name="text">
+       <string>TextLabel</string>
       </property>
      </widget>
     </item>
@@ -181,6 +209,13 @@
       </property>
      </widget>
     </item>
+    <item row="8" column="1">
+     <widget class="QSlider" name="slider_HUE">
+      <property name="orientation">
+       <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
     <item row="2" column="1">
      <widget class="QSlider" name="slider_Focus">
       <property name="maximum">
@@ -194,16 +229,10 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="1">
-     <widget class="QSlider" name="slider_Saturation">
-      <property name="maximum">
-       <number>100</number>
-      </property>
-      <property name="value">
-       <number>50</number>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Orientation::Horizontal</enum>
+    <item row="2" column="3">
+     <widget class="QCheckBox" name="checkBox_Auto_Focus">
+      <property name="text">
+       <string>Auto</string>
       </property>
      </widget>
     </item>
@@ -214,27 +243,6 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="3">
-     <widget class="QCheckBox" name="checkBox_Auto_Focus">
-      <property name="text">
-       <string>Auto</string>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="3">
-     <widget class="QCheckBox" name="checkBox_Auto_Wbalance">
-      <property name="text">
-       <string>Auto</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QLabel" name="label_3">
-      <property name="text">
-       <string>Focus</string>
-      </property>
-     </widget>
-    </item>
     <item row="2" column="2">
      <widget class="QLabel" name="lbl_focus">
       <property name="text">
@@ -242,64 +250,42 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="2">
-     <widget class="QLabel" name="lbl_brightness">
+    <item row="4" column="3">
+     <widget class="QCheckBox" name="checkBox_Auto_Exposure">
       <property name="text">
-       <string>TextLabel</string>
+       <string>Auto</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="label_4">
+      <property name="text">
+       <string>Saturation</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="label_6">
+      <property name="text">
+       <string>Gamma</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QSlider" name="slider_Contrast">
+      <property name="maximum">
+       <number>100</number>
+      </property>
+      <property name="sliderPosition">
+       <number>50</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Orientation::Horizontal</enum>
       </property>
      </widget>
     </item>
     <item row="1" column="2">
      <widget class="QLabel" name="lbl_contrast">
-      <property name="text">
-       <string>TextLabel</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="2">
-     <widget class="QLabel" name="lbl_saturation">
-      <property name="text">
-       <string>TextLabel</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="2">
-     <widget class="QLabel" name="lbl_exposure">
-      <property name="text">
-       <string>TextLabel</string>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="2">
-     <widget class="QLabel" name="lbl_gamma">
-      <property name="text">
-       <string>TextLabel</string>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="2">
-     <widget class="QLabel" name="lbl_color_temp">
-      <property name="text">
-       <string>TextLabel</string>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="2">
-     <widget class="QLabel" name="lbl_wb">
-      <property name="text">
-       <string>TextLabel</string>
-      </property>
-     </widget>
-    </item>
-    <item row="8" column="2">
-     <widget class="QLabel" name="lbl_sharpness">
-      <property name="text">
-       <string>TextLabel</string>
-      </property>
-     </widget>
-    </item>
-    <item row="9" column="2">
-     <widget class="QLabel" name="lbl_hue">
       <property name="text">
        <string>TextLabel</string>
       </property>
