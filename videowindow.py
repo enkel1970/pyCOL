@@ -182,7 +182,7 @@ class VideoWindow(QWidget):
     
     #Set the overlay center offset (x, y) in pixels.
     def set_center_offset(self, x, y):
-        self.center_offset = (x, y)
+        self.center_offset = (x, y * -1) # Invert y-axis for correct display up/down
         self.update()
 
     # Set the visibility of the cross overlay.
