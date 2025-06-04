@@ -143,7 +143,9 @@ class CameraControlsDialog(QDialog):
 
     def handle_auto_whitebalance(self, state):
         self.set_property(cv2.CAP_PROP_AUTO_WB, state)
-
+        self.lbl_color_temp.setText("Auto" if state else str(self.slider_Colortemp.value()))
+        self.slider_Colortemp.setEnabled(state == 0)
+        
     def update_exposure(self, val):
         real_val = val / 10.0
         self.set_property(cv2.CAP_PROP_EXPOSURE, real_val)
