@@ -58,7 +58,7 @@ if __name__ == "__main__":
 
     # Set the main window to the UI position and size
     # NOTE: The position is not allowed in wayland protocol!
-    ui.window().setGeometry(size.width() - 363, 0, 363, 720)
+    ui.window().setGeometry(size.width() - 363, 0, 363, 750)
     ui.show()
     ui.window().setWindowTitle("Python Newtonian Telescope Collimator")
     ui.window().setWindowIcon(icon)
