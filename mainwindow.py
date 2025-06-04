@@ -12,7 +12,7 @@ class CameraThread(QThread):
     def __init__(self, camera_index=None):
         super().__init__()
         self.camera_index = camera_index
-        print(f"Inizializzazione thread camera con indice {self.camera_index}")
+        print(f"Init thread camera with index {self.camera_index}")
         self.running = False
         self.cap = None
                 
@@ -102,33 +102,44 @@ class MainWindow(QMainWindow):
                 border-radius: 3px;
             }}
             QSlider::groove:horizontal {{
-                background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(128, 128, 128, 255), stop:1 rgba(255, 0, 0, 255));
+                background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(128, 128, 128, 255), stop:1 rgba(255, 255, 255, 255));
                 height: 8px;
                 border-radius: 3px;
             }}
         """)
 
-
+        # Set the initial values for cross properties
+        self.ui.lbl_r1.setText(str(self.ui.sliderRadius_1.value()))
+        self.ui.lbl_t1.setText(str(self.ui.sliderThickness_1.value()))
+        self.ui.lbl_r2.setText(str(self.ui.sliderRadius_2.value()))
+        self.ui.lbl_t2.setText(str(self.ui.sliderThickness_2.value()))
+        self.ui.lbl_r3.setText(str(self.ui.sliderRadius_3.value()))
+        self.ui.lbl_t3.setText(str(self.ui.sliderThickness_3.value()))
+        self.ui.lbl_x.setText(str(self.ui.sliderOffsetX.value()))
+        self.ui.lbl_y.setText(str(self.ui.sliderOffsetY.value()))
+        self.ui.lbl_cl.setText(str(self.ui.sliderCrossLength.value()))
+        self.ui.lbl_ct.setText(str(self.ui.sliderThicknessCross.value()))
+        self.ui.lbl_ca.setText(str(self.ui.sliderCrossAngle.value()))
+       
     def setup_color_labels(self):
         for i in range(1, 5):  
             label = getattr(self.ui, f"label_color_{i}")
-            label.setToolTip("Click to pick color")
             label.mousePressEvent = lambda event, l=label: self.pick_color_for_label(l)
 
     def connect_overlay_controls(self):
         # Circle 1 and checkbox 
-        self.ui.sliderRadius_1.valueChanged.connect(lambda val: self.update_circle(0, radius=val))
-        self.ui.sliderThickness_1.valueChanged.connect(lambda val: self.update_circle(0, thickness=val))
+        self.ui.sliderRadius_1.valueChanged.connect(lambda val: (self.update_circle(0, radius=val), self.ui.lbl_r1.setText(str(val))))
+        self.ui.sliderThickness_1.valueChanged.connect(lambda val: (self.update_circle(0, thickness=val), self.ui.lbl_t1.setText(str(val))))
         self.ui.checkBox_1.stateChanged.connect(lambda state: self.update_circle(0, visible=(state == 2)))
 
         # Circle 2 and checkbox
-        self.ui.sliderRadius_2.valueChanged.connect(lambda val: self.update_circle(1, radius=val))
-        self.ui.sliderThickness_2.valueChanged.connect(lambda val: self.update_circle(1, thickness=val))
+        self.ui.sliderRadius_2.valueChanged.connect(lambda val: (self.update_circle(1, radius=val), self.ui.lbl_r2.setText(str(val))))
+        self.ui.sliderThickness_2.valueChanged.connect(lambda val: (self.update_circle(1, thickness=val), self.ui.lbl_t2.setText(str(val))))
         self.ui.checkBox_2.stateChanged.connect(lambda state: self.update_circle(1, visible=(state == 2)))
 
         # Circle 3 and checkbox
-        self.ui.sliderRadius_3.valueChanged.connect(lambda val: self.update_circle(2, radius=val))
-        self.ui.sliderThickness_3.valueChanged.connect(lambda val: self.update_circle(2, thickness=val))
+        self.ui.sliderRadius_3.valueChanged.connect(lambda val: (self.update_circle(2, radius=val), self.ui.lbl_r3.setText(str(val))))
+        self.ui.sliderThickness_3.valueChanged.connect(lambda val: (self.update_circle(2, thickness=val), self.ui.lbl_t3.setText(str(val))))
         self.ui.checkBox_3.stateChanged.connect(lambda state: self.update_circle(2, visible=(state == 2)))    
     
     # Methods for cross properties changes
@@ -138,14 +149,17 @@ class MainWindow(QMainWindow):
             self.video_window.set_cross_property('visible', visible)
 
     def cross_length_changed(self, val):
+        self.ui.lbl_cl.setText(str(val))
         if self.video_window:
             self.video_window.set_cross_property('length', val)
 
     def cross_thickness_changed(self, val):
+        self.ui.lbl_ct.setText(str(val))
         if self.video_window:
             self.video_window.set_cross_property('thickness', val)
 
     def cross_angle_changed(self, val):
+        self.ui.lbl_ca.setText(str(val))
         if self.video_window:
             self.video_window.set_cross_property('angle', val)
     
@@ -174,12 +188,11 @@ class MainWindow(QMainWindow):
                 index = int(label.objectName().split('_')[-1]) - 1
                 self.set_circle_property(index, 'color', color)
                 self.update_circle(index, color=color)
-            
-
-
 
     # Handlers for overlay offset
     def update_overlay_offset(self):
+        self.ui.lbl_x.setText(str(self.ui.sliderOffsetX.value()))
+        self.ui.lbl_y.setText(str(self.ui.sliderOffsetY.value()))
         if self.video_window and self.ui.checkBoxOffset.isChecked():
             x = self.ui.sliderOffsetX.value()
             y = self.ui.sliderOffsetY.value()
@@ -255,6 +268,7 @@ class MainWindow(QMainWindow):
             self.video_window.set_cross_property('visible', self.ui.checkBox_4.isChecked())
             self.video_window.set_cross_property('color', getattr(self.ui, 'label_color_4').palette().color(getattr(self.ui, 'label_color_4').backgroundRole()))
             self.video_window.show()
+            self.ui.btnOpenCamera.setEnabled(False)  # Disable the button to prevent multiple clicks
 
     # Stop the camera thread and close the video window
     def stop_camera(self):
@@ -264,7 +278,8 @@ class MainWindow(QMainWindow):
         if self.video_window:
             self.video_window.close()
             self.video_window = None
-
+            self.ui.btnOpenCamera.setEnabled(True)  # Re-enable the button
+            
     # Update the video frame in the video window
     def update_frame(self, frame):
         if self.video_window:
@@ -316,6 +331,7 @@ class MainWindow(QMainWindow):
         self.controls_dialog.show()
     
     def closeEvent(self, event):
+        
         if self.camera_thread:
             self.camera_thread.stop()
             self.camera_thread.wait() 
