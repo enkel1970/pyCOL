@@ -34,6 +34,7 @@ class CameraThread(QThread):
         self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc(*'MJPG'))
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 3264)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 2448)
+        self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 3)  # Set buffer size to 1 for low latency
 
         self.running = self.cap.isOpened()
         while self.running:
