@@ -1,5 +1,6 @@
 import cv2
 
+
 def get_properties(cap):
     """
     Test and display OpenCV properties of the video capture device.
@@ -57,11 +58,13 @@ def real_time_demo(cap):
         current_time = cap.get(cv2.CAP_PROP_POS_MSEC)
         current_frame = cap.get(cv2.CAP_PROP_POS_FRAMES)
         total_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
-        print(f"Time: {current_time:.2f} ms | Frame: {current_frame}/{total_frames:.0f}", end="\r")
+        print(
+            f"Time: {current_time:.2f} ms | Frame: {current_frame}/{total_frames:.0f}",
+            end="\r",
+        )
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord("q"):
             break
-
 
 
 def unsupported_properties_section():
@@ -89,13 +92,14 @@ def unsupported_properties_section():
 # Main script
 if __name__ == "__main__":
     # Video source (0 for webcam, or provide a video file path)
-    video_source = 2  # Replace with 'sample_video.mp4' for video file
+    video_source = 0  # Replace with 'sample_video.mp4' for video file
     cap = cv2.VideoCapture(video_source)  # Use V4L2 backend for Linux cameras
-    cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))  # Set codec for video capture
+    cap.set(
+        cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG")
+    )  # Set codec for video capture
     cap.set(cv2.CAP_PROP_FPS, 30)  # Set frames per second
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 3264)  # Set frame width
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 2448)  # Set frame height    
-    
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 2448)  # Set frame height
 
     if not cap.isOpened():
         print("Error: Could not open video source.")
