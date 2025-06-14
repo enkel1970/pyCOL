@@ -6,19 +6,25 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>385</width>
+    <width>400</width>
     <height>755</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="minimumSize">
    <size>
-    <width>385</width>
+    <width>400</width>
     <height>700</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>385</width>
+    <width>400</width>
     <height>1080</height>
    </size>
   </property>
@@ -33,7 +39,7 @@
    <widget class="QWidget" name="gridLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>0</x>
+      <x>10</x>
       <y>90</y>
       <width>381</width>
       <height>81</height>
@@ -160,7 +166,7 @@ border-style:inset;
    <widget class="QWidget" name="verticalLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>0</x>
+      <x>10</x>
       <y>180</y>
       <width>381</width>
       <height>131</height>
@@ -345,7 +351,7 @@ border-style:inset;
    <widget class="QWidget" name="verticalLayoutWidget_3">
     <property name="geometry">
      <rect>
-      <x>0</x>
+      <x>10</x>
       <y>450</y>
       <width>381</width>
       <height>111</height>
@@ -527,7 +533,7 @@ border-style:inset;
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>0</x>
+      <x>10</x>
       <y>320</y>
       <width>381</width>
       <height>121</height>
@@ -705,7 +711,7 @@ border-style:inset;
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>0</x>
+      <x>10</x>
       <y>570</y>
       <width>381</width>
       <height>131</height>
@@ -925,7 +931,7 @@ border-style:inset;
    <widget class="QLabel" name="lbl_Logo">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>240</x>
       <y>710</y>
       <width>150</width>
       <height>31</height>
@@ -950,7 +956,7 @@ border-style:inset;
    <widget class="QWidget" name="gridLayoutWidget_2">
     <property name="geometry">
      <rect>
-      <x>0</x>
+      <x>10</x>
       <y>0</y>
       <width>381</width>
       <height>80</height>
