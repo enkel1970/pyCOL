@@ -28,7 +28,7 @@ See the [LICENSE](./Licence.txt) file for full details.
     If this is an issue for you, please start the session using X11.</p>
 
 
-<h2>Windows installation</h2>
+<h2>Windows installation </h2>
 
 <p>Create a virtual environment</p>
 <pre><code>python -m venv pycol</code></pre>
