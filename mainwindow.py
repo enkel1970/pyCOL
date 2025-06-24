@@ -22,7 +22,7 @@ class CameraThread(QThread):
         platform_name = platform.system().lower()
         print(f"Running on platform: {platform_name}")
         if platform_name == "windows":
-            self.cap = cv2.VideoCapture(self.camera_index, cv2.CAP_DSHOW)
+            self.cap = cv2.VideoCapture(self.camera_index, cv2.CAP_MSMF)
             self.cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)  # Set manual exposure
             self.cap.set(
                 cv2.CAP_PROP_EXPOSURE, -4
