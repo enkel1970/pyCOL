@@ -21,7 +21,7 @@ def find_camera_index_by_name_substring():
                 return camera_info.index - 1  # Adjusting index for V4L2 backend
     elif platform_name == "windows":
         print("Using MSMF backend for Windows cameras.")
-        for camera_info in enumerate_cameras(cv2.CAP_MSMF):
+        for camera_info in enumerate_cameras(cv2.CAP_DSHOW):
             print(f"{camera_info.index}: {camera_info.name}")
             if target_name_windows in camera_info.name:
                 print(f'Found camera with name "ocal2" at index {camera_info.index}')

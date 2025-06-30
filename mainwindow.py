@@ -22,7 +22,7 @@ class CameraThread(QThread):
         platform_name = platform.system().lower()
         print(f"Running on platform: {platform_name}")
         if platform_name == "windows":
-            self.cap = cv2.VideoCapture(self.camera_index, cv2.CAP_MSMF)
+            self.cap = cv2.VideoCapture(self.camera_index, cv2.CAP_DSHOW)
             self.cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)  # Set manual exposure
             self.cap.set(
                 cv2.CAP_PROP_EXPOSURE, -4
@@ -410,11 +410,16 @@ class MainWindow(QMainWindow):
             self.video_window.set_center_offset(x, y)
 
     def open_camera_control_dialog(self):
-        if not self.controls_dialog:
-            self.controls_dialog = CameraControlsDialog(
-                camera_thread=self.camera_thread, parent=self
-            )
-        self.controls_dialog.show()
+        if platform.system().lower() == "windows":
+            camera_thread = self.camera_thread
+            camera_thread.cap.set(cv2.CAP_PROP_SETTINGS, 1)
+            return
+        elif platform.system().lower() == "linux":
+            if not self.controls_dialog:
+                self.controls_dialog = CameraControlsDialog(
+                    camera_thread=self.camera_thread, parent=self
+                )
+                self.controls_dialog.show()
 
     def closeEvent(self, event):
 
